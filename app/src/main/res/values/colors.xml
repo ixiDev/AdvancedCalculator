@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#130F10</color>
+    <color name="colorPrimaryDark">#39383D</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="tv_input_background">#a2af77</color>
+    <color name="equals_btn_background">#f15a2b</color>
+    <color name="btns_background">#58595b</color>
+</resources>

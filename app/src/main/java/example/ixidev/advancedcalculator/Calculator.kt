@@ -10,19 +10,36 @@ import kotlin.collections.ArrayList
  * Github : https://github.com/ixiDev
  */
 class Calculator {
-
+    /**
+     * a regular expression ( Regex ) to split mathematical expression element by element
+     * example : 2+4-6/8.9+83 split it to list of elements (tokens) -> ["2","+","4","-","6","/","8.9","+","83"]
+     */
     private val parse_tokens_regex = "(\\d+(\\.\\d+)?)|([+*/-])"
+
+    /**
+     * mathematical expression that will be calcul
+     */
     private var expression: String = ""
 
-    // 2+4  -> 2,+,4
+    /**
+     * This function is a call of all functions of this class.
+     * @param expression : math expression
+     * @return double : result of expression
+     */
     fun getResult(expression: String): Double {
         this.expression = expression
         val tokens = parseTokens(expression)
         val postfix = convertToPostFix(tokens)
         val result = computeResult(postfix)
-        return 0.0
+        return result
     }
 
+    /**
+     *This is the second important function in Shunting-Yard algorithm ,
+     * it's take math expression in post-fix form and calcul it.
+     * @param queue math expression elements in post-fix form
+     * @return the final result of expression
+     */
     fun computeResult(queue: Queue<String>): Double {
 
         val stack = Stack<String>()
@@ -44,7 +61,14 @@ class Calculator {
         return result.toDouble()
     }
 
-    private fun calcul(firs: String, second: String, operation: String): Double {
+    /**
+     * Calculate two numbers and return result
+     * @param firs: first number
+     * @param second : second number
+     * @param operation : calculation operation
+     * @return result of calculation
+     */
+    private fun calcul(firs: String, second: String, operation: String?): Double {
         return when (operation) {
             "+" -> firs.toDouble() + second.toDouble()
             "-" -> second.toDouble() - firs.toDouble()
@@ -55,6 +79,14 @@ class Calculator {
 
     }
 
+    /**
+     * This is the important function of the Shunting-Yard algorithm.
+     * Convert elements of math expression from infix notation ( normal expression) to post-fix notation
+     * Example : [2,+,2] is a infix will convert it to [2,2,+]
+     * @see CalculatorTest unit test for more examples
+     * @param tokens math expression elements in infix form
+     * @return list of elements( tokens ) in post-fix form
+     */
     fun convertToPostFix(tokens: List<String>): Queue<String> {
         val stack = Stack<String>()
         val queue: Queue<String> = LinkedList()
@@ -85,6 +117,12 @@ class Calculator {
         return queue
     }
 
+    /**
+     * Compare priority of tow operations
+     * @param token : first operation
+     * @param top : second operation
+     * @return : true if top has low priority than token
+     */
     private fun hasLowPriority(token: String, top: String?): Boolean {
         if (top == null)
             return false
@@ -92,14 +130,34 @@ class Calculator {
         return priority.indexOf(top) < priority.indexOf(token)
     }
 
-    private fun isOperation(token: String): Boolean {
+    /**
+     *Check whatever string is a math operations or not
+     * operations : [+ * / -]
+     * @param token : expression element
+     * @return true if is operation
+     */
+    private fun isOperation(token: String?): Boolean {
+        if (token == null)
+            return false
         return token.matches("[+*/-]".toRegex())
     }
 
-    private fun isNumber(token: String): Boolean {
+    /**
+     * Check whatever string is a number or not
+     * @param token : expression element
+     * @return true if is number
+     */
+    private fun isNumber(token: String?): Boolean {
+        if (token == null)
+            return false
         return token.matches("(\\d+(\\.\\d+)?)".toRegex())
     }
 
+    /**
+     * function take mathematical expression as single string and return list of it elements (tokens)
+     * @param expression : mathematical expression
+     * @return list of expression elements
+     */
     fun parseTokens(expression: String): List<String> {
         val pattern = Pattern.compile(parse_tokens_regex)
         val matcher = pattern.matcher(expression)
@@ -110,6 +168,5 @@ class Calculator {
         }
         return tokens
     }
-
 
 }

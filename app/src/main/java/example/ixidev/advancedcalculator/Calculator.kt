@@ -14,7 +14,7 @@ class Calculator {
      * a regular expression ( Regex ) to split mathematical expression element by element
      * example : 2+4-6/8.9+83 split it to list of elements (tokens) -> ["2","+","4","-","6","/","8.9","+","83"]
      */
-    private val parse_tokens_regex = "(\\d+(\\.\\d+)?)|([+*/-])"
+    private val parse_tokens_regex = "(\\d+(\\.\\d+)?)|([+*×÷/-])"
 
     /**
      * mathematical expression that will be calcul
@@ -57,7 +57,8 @@ class Calculator {
             }
         }
 
-        val result = stack.pop()
+        val pop = stack.pop().toDouble()
+        val result = String.format("%.6f", pop)
         return result.toDouble()
     }
 
@@ -72,8 +73,8 @@ class Calculator {
         return when (operation) {
             "+" -> firs.toDouble() + second.toDouble()
             "-" -> second.toDouble() - firs.toDouble()
-            "*" -> firs.toDouble() * second.toDouble()
-            "/" -> second.toDouble() / firs.toDouble()
+            "*", "×" -> firs.toDouble() * second.toDouble()
+            "/", "÷" -> second.toDouble() / firs.toDouble()
             else -> 0.0
         }
 
@@ -126,7 +127,7 @@ class Calculator {
     private fun hasLowPriority(token: String, top: String?): Boolean {
         if (top == null)
             return false
-        val priority = listOf("*", "/", "+", "-")
+        val priority = listOf("*", "×", "/", "÷", "-", "+")
         return priority.indexOf(top) < priority.indexOf(token)
     }
 
@@ -139,7 +140,7 @@ class Calculator {
     private fun isOperation(token: String?): Boolean {
         if (token == null)
             return false
-        return token.matches("[+*/-]".toRegex())
+        return token.matches("[+*/×÷-]".toRegex())
     }
 
     /**

@@ -40,7 +40,7 @@ class CalculatorTest {
         val calculator = Calculator()
         val tokens = calculator.parseTokens("6+7-8*2+962/7")
         val postFix = calculator.convertToPostFix(tokens)
-        assertEquals(listOf("6", "7", "+", "8", "2", "*", "-", "962", "7", "/", "+"), postFix)
+        assertEquals(listOf("6", "7", "8", "2", "*", "-","+", "962", "7", "/", "+"), postFix)
     }
 
     @Test
@@ -50,6 +50,24 @@ class CalculatorTest {
         val postFix = calculator.convertToPostFix(tokens)
         val result = calculator.computeResult(postFix)
         assertEquals(7.5.toString(), result.toString())
+
+    }
+    @Test
+    fun computeResultTest2() {
+        val calculator = Calculator()
+        val tokens = calculator.parseTokens("8-5+6")
+        val postFix = calculator.convertToPostFix(tokens)
+        val result = calculator.computeResult(postFix)
+        assertEquals(9.0.toString(), result.toString())
+
+    }
+    @Test
+    fun computeResultTest3() {
+        val calculator = Calculator()
+        val tokens = calculator.parseTokens("6+7-8*2+962/7")
+        val postFix = calculator.convertToPostFix(tokens)
+        val result = calculator.computeResult(postFix)
+        assertEquals(134.428571.toString(), result.toString())
 
     }
 }

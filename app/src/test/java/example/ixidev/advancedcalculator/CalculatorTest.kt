@@ -49,7 +49,7 @@ class CalculatorTest {
         val tokens = calculator.parseTokens("2+8.5-6/2")
         val postFix = calculator.convertToPostFix(tokens)
         val result = calculator.computeResult(postFix)
-        assertEquals(7.5.toString(), result.toString())
+        assertEquals(7.5, result, 0.0)
 
     }
 
@@ -59,7 +59,7 @@ class CalculatorTest {
         val tokens = calculator.parseTokens("8-5+6")
         val postFix = calculator.convertToPostFix(tokens)
         val result = calculator.computeResult(postFix)
-        assertEquals(9.0.toString(), result.toString())
+        assertEquals(9.0, result, 0.0)
 
     }
 
@@ -69,14 +69,27 @@ class CalculatorTest {
         val tokens = calculator.parseTokens("6+7-8*2+962/7")
         val postFix = calculator.convertToPostFix(tokens)
         val result = calculator.computeResult(postFix)
-        assertEquals(134.428571.toString(), result.toString())
+        assertEquals(134.428571, result, 0.0)
     }
 
     @Test
     fun getResult() {
         val calculator = Calculator()
-        val result = calculator.getResult("4×77-93÷3-8×99+2+44-25×54")
-        assertEquals("-1819.0", result.toString())
+        val result = calculator.getResult("4×77-93÷3-8×99+2+44-(25×54)")
+        assertEquals(-1819.0, result, 0.0)
+    }
+
+    @Test
+    fun isExpressionCorrect() {
+        val calculator = Calculator()
+        val result = calculator.isExpressionCorrect("4×77-93÷3-8×99+2+44--83+*")
+        assertEquals(false, result)
+    }
+    @Test
+    fun isExpressionCorrect2() {
+        val calculator = Calculator()
+        val result = calculator.isExpressionCorrect("4×77-93÷3-8×99+2+44-(25×54)")
+        assertEquals(true, result)
     }
 
 }

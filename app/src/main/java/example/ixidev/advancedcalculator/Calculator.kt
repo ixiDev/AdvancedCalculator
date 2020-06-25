@@ -14,7 +14,7 @@ class Calculator {
      * a regular expression ( Regex ) to split mathematical expression element by element
      * example : 2+4-6/8.9+83 split it to list of elements (tokens) -> ["2","+","4","-","6","/","8.9","+","83"]
      */
-    private val parse_tokens_regex = "(\\d+(\\.\\d+)?)|([+*×÷/-])"
+    private val parse_tokens_regex = "([()])|(\\d+(\\.\\d+)?)|([+*×÷/-])"
 
     /**
      * mathematical expression that will be calcul
@@ -22,10 +22,17 @@ class Calculator {
     private var expression: String = ""
 
     /**
+     * Throw when a math expression not correct
+     * @param message : error message
+     */
+    class MathExpressionException(message: String?) : Exception(message)
+
+    /**
      * This function is a call of all functions of this class.
      * @param expression : math expression
      * @return double : result of expression
      */
+    @Throws(MathExpressionException::class)
     fun getResult(expression: String): Double {
         this.expression = expression
         val tokens = parseTokens(expression)
@@ -88,34 +95,60 @@ class Calculator {
      * @param tokens math expression elements in infix form
      * @return list of elements( tokens ) in post-fix form
      */
+    @Throws(MathExpressionException::class)
     fun convertToPostFix(tokens: List<String>): Queue<String> {
         val stack = Stack<String>()
         val queue: Queue<String> = LinkedList()
 
         for (token in tokens) {
-            // first rule :
-            if (isNumber(token)) {
-                queue.add(token)
-            } else if (isOperation(token)) {
-                if (stack.isEmpty()) {
-                    stack.push(token) // 2 rule
-                } else {
-                    // 3 rule
-                    val top = stack.peek()
-                    if (hasLowPriority(token, top)) {
-                        while (stack.isNotEmpty()) {
-                            queue.add(stack.pop())
+            when {
+                isNumber(token) -> {
+                    queue.add(token) // first rule
+                }
+                isOperation(token) -> {
+                    if (stack.isNotEmpty()) {
+                        val top = stack.peek()
+                        // rule 3
+                        if (hasLowPriority(token, top)) {
+                            while (stack.isNotEmpty() && stack.peek() != "(") {
+                                queue.add(stack.pop())
+                            }
                         }
-                        stack.push(token)
-                    } else stack.push(token)
+                    }
+                    stack.push(token) // rule 2
+
+                }
+                token == "(" -> {
+                    stack.push(token)
+                }
+                token == ")" -> {
+                    if (stack.isEmpty())
+                        fail(token)
+                    while (stack.peek() != "(") {
+                        queue.add(stack.pop())
+                        if (stack.isEmpty())
+                            fail(token)
+                    }
+                    if (stack.peek() != "(") {
+                        fail(token)
+                    }
+                    stack.pop() // remove the opened bracket
                 }
             }
+
         }
 
         while (stack.isNotEmpty()) {
             queue.add(stack.pop())
         }
         return queue
+    }
+
+    /**
+     * Throw Brackets mismatch exception
+     */
+    private fun fail(token: String) {
+        throw MathExpressionException(" Brackets mismatch error at \'$token\'")
     }
 
     /**
@@ -168,6 +201,10 @@ class Calculator {
             tokens.add(matcher.group())
         }
         return tokens
+    }
+
+    fun isExpressionCorrect(expression: String): Boolean {
+        return expression.matches("(([()]*[+*×÷/-])?[()]*(\\d+(\\.\\d+)?)[()]*)+".toRegex())
     }
 
 }

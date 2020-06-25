@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +23,9 @@ class MainActivity : AppCompatActivity() {
         inputText = findViewById(R.id.inputTextView)
         resultText = findViewById(R.id.resualtTextView)
         inputTextView.hideKeyBoard()
+        inputText.doOnTextChanged { text, _, _, _ ->
+            onCalculExpression()
+        }
 
     }
 
@@ -31,19 +35,32 @@ class MainActivity : AppCompatActivity() {
 
     fun onNumberClick(view: View) {
         (view as Button).let {
-            inputText.append(it.text)
+            onAppend(it.text)
         }
     }
 
     fun onOperationClick(view: View) {
         (view as Button).let {
-            inputText.append(it.text)
+            onAppend(it.text)
         }
     }
 
+    private fun onAppend(char: CharSequence) {
+        inputText.append(char)
+    }
+
     fun onEqualsButtonClick(view: View) {
-        val expression = inputText.text.toString()
-        val result = calculator.getResult(expression)
-        resultText.text = "$result"
+        inputText.setText(resultText.text)
+    }
+
+    private fun onCalculExpression() {
+        val expression = inputText.toText().trim()
+        try {
+            if (calculator.isExpressionCorrect(expression)) {
+                val result = calculator.getResult(expression)
+                resultText.text = "$result"
+            } else resultText.text = "0.0"
+        } catch (e: Exception) {
+        }
     }
 }
